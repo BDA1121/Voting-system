@@ -13,10 +13,11 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-
+//to get blockchain
 app.get('/blockchain',function(req,res){
     return res.status(200).json(bt)
 })
+
 
 app.post('/transaction',function(req,res){
     const trans = req.body;
@@ -24,6 +25,7 @@ app.post('/transaction',function(req,res){
     res.json({note:`added to ${blkIndex}`})
 })
 
+// to broadcast the vote and create it
 app.post('/transaction/broad',function(req,res){
     const newTrans = bt.createTrans(req.body.amount,req.body.sender,req.body.recipient);
     bt.addTransToPend(newTrans);
@@ -44,6 +46,7 @@ app.post('/transaction/broad',function(req,res){
     })
 })
 
+//to mine a new block
 app.get('/mine',function(req,res){
     const lastBlk = bt.getLast();
     const prevblkhash = lastBlk['hash'];
@@ -82,6 +85,7 @@ app.get('/mine',function(req,res){
     })
 })
 
+//block recieved from broadcast
 app.post('/receive-blk',function(req,res){
     const newBlk = req.body.newBlk;
     const lastBlk = bt.getLast();
@@ -128,6 +132,8 @@ app.post('/reg-and-brd',function(req,res){
 	});
 })
 
+
+//to register node
 app.post('/reg-node', function(req,res){
     const newNodeUrl = req.body.newNodeUrl;
     if(bt.networkNodes.indexOf(newNodeUrl)=== -1 && bt.currentnNodeUrl !== newNodeUrl){
@@ -146,6 +152,7 @@ app.post('/reg-bulk',function(req,res){
     res.json({note:"bulk reg done"});
 })
 
+// to check the validity of the chain
 app.get('/consensus',function(req,res){
     const requestPromises = [];
     bt.networkNodes.forEach(networkNodeUrl =>{
